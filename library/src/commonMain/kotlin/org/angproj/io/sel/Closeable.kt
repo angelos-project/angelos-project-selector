@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2024-2025 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -14,5 +14,10 @@
  */
 package org.angproj.io.sel
 
-public interface SelectableChannel : Streamable{
+/**
+ * Temporarily borrowed, should be the one from the buffer package
+ */
+public interface Closeable {
+
+    public fun close()
 }

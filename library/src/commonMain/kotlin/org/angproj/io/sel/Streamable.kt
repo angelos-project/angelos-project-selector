@@ -14,5 +14,9 @@
  */
 package org.angproj.io.sel
 
-public interface SelectableChannel : Streamable{
+public interface Streamable : Closeable {
+
+    public val isOpen: Boolean
+
+    override fun close()
 }
