@@ -14,5 +14,7 @@
  */
 package org.angproj.io.sel
 
-public interface SelectableChannel {
-}
+/**
+ * Exception thrown when an operation is attempted on a cancelled selection key.
+ */
+public class CancelledKeyException : IllegalStateException()

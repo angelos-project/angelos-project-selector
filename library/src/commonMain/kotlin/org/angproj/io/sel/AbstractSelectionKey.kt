@@ -14,106 +14,83 @@
  */
 package org.angproj.io.sel
 
+
 /**
- * A token representing the registration of a [SelectableChannel] with a [Selector].
- *
- * A selection key is created each time a channel is registered with a selector.
- * It remains valid until it is cancelled, the channel is closed, or the selector is closed.
- *
- * A selection key contains:
- * - The selector with which it is registered
- * - The channel for which it was created
- * - The interest set, which determines the operations for which the channel will be tested
- * - The ready set, which identifies the operations for which the channel is ready
- * - An optional attachment object
- *
- * Selection keys are thread-safe and may be used by multiple threads.
+ * A fully functional abstract base for selection keys, using [SelectOperation] for operation sets.
  */
-public abstract class AbstractSelectionKey : SelectionKey {
+public abstract class AbstractSelectionKey(
+    private val _selector: Selector,
+    private val _channel: SelectableChannel
+) : SelectionKey {
+
+    private var _attachment: Any = nullAttachment
+
+    private var _interestOps: Int = 0
+
+    private var _readyOps: Int = 0
+
+    private var _valid: Boolean = true
+
+    override fun selector(): Selector = _selector
+
+    override fun channel(): SelectableChannel = _channel
+
+    override fun attach(obj: Any) {
+        _attachment = obj
+    }
+
+    override fun attachment(): Any = _attachment
+
+    override fun interestOps(): Int {
+        ensureValid()
+        return _interestOps
+    }
+
+    override fun interestOps(ops: Int): AbstractSelectionKey {
+        ensureValid()
+        require((ops and _channel.validOps().inv()) == 0) { "Invalid interest ops for channel" }
+        _interestOps = ops
+        return this
+    }
+
+    override fun readyOps(): Int {
+        ensureValid()
+        return _readyOps
+    }
 
     /**
-     * Returns the selector with which this key is registered.
+     * Sets the ready operations. Should be called by the selector implementation.
      */
-    abstract override fun selector(): Selector
+    protected fun setReadyOps(ops: Int) {
+        _readyOps = ops
+    }
 
-    /**
-     * Attaches the given object to this key.
-     *
-     * @param obj the object to attach; may be null
-     */
-    abstract override fun attach(obj: Any)
+    override fun isAcceptable(): Boolean =
+        (readyOps() and SelectOperation.OP_ACCEPT.toInt()) != 0
 
-    /**
-     * Retrieves the current attachment.
-     *
-     * @return the attached object, or null if none
-     */
-    abstract override fun attachment(): Any
+    override fun isConnectable(): Boolean =
+        (readyOps() and SelectOperation.OP_CONNECT.toInt()) != 0
 
-    /**
-     * Returns the channel for which this key was created.
-     */
-    abstract override fun channel(): SelectableChannel
+    override fun isReadable(): Boolean =
+        (readyOps() and SelectOperation.OP_READ.toInt()) != 0
 
-    /**
-     * Retrieves this key's interest set.
-     *
-     * @return the interest set
-     */
-    abstract override fun interestOps(): Int
+    override fun isWritable(): Boolean =
+        (readyOps() and SelectOperation.OP_WRITE.toInt()) != 0
 
-    /**
-     * Sets this key's interest set.
-     *
-     * @param ops the new interest set
-     * @return this selection key
-     */
-    abstract override fun interestOps(ops: Int): AbstractSelectionKey
+    override fun isValid(): Boolean = _valid
 
-    /**
-     * Retrieves this key's ready set.
-     *
-     * @return the ready set
-     */
-    abstract override fun readyOps(): Int
+    override fun cancel() {
+        if (_valid) {
+            _valid = false
+            _selector.deregister(this)
+        }
+    }
 
-    /**
-     * Tells whether this key's channel is ready to accept a new socket connection.
-     *
-     * @return true if acceptable
-     */
-    abstract override fun isAcceptable(): Boolean
+    private fun ensureValid() {
+        if (!_valid) throw CancelledKeyException()
+    }
 
-    /**
-     * Tells whether this key's channel is ready to complete its connection sequence.
-     *
-     * @return true if connectable
-     */
-    abstract override fun isConnectable(): Boolean
-
-    /**
-     * Tells whether this key's channel is ready for reading.
-     *
-     * @return true if readable
-     */
-    abstract override fun isReadable(): Boolean
-
-    /**
-     * Tells whether this key's channel is ready for writing.
-     *
-     * @return true if writable
-     */
-    abstract override fun isWritable(): Boolean
-
-    /**
-     * Tells whether this key is valid.
-     *
-     * @return true if valid
-     */
-    abstract override fun isValid(): Boolean
-
-    /**
-     * Cancels this key.
-     */
-    abstract override fun cancel()
+    public companion object {
+        public val nullAttachment: Any = object
+    }
 }

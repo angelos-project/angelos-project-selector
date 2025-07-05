@@ -14,5 +14,5 @@
  */
 package org.angproj.io.sel
 
-public interface SelectableChannel {
+public class SelectorException(msg: String = "") : RuntimeException(msg) {
 }
