@@ -29,38 +29,38 @@ package org.angproj.io.sel
  *
  * Selection keys are thread-safe and may be used by multiple threads.
  */
-public interface SelectionKey {
+public abstract class AbstractSelectionKey : SelectionKey {
 
     /**
      * Returns the selector with which this key is registered.
      */
-    public fun selector(): Selector
+    abstract override fun selector(): Selector
 
     /**
      * Attaches the given object to this key.
      *
      * @param obj the object to attach; may be null
      */
-    public fun attach(obj: Any)
+    abstract override fun attach(obj: Any)
 
     /**
      * Retrieves the current attachment.
      *
      * @return the attached object, or null if none
      */
-    public fun attachment(): Any
+    abstract override fun attachment(): Any
 
     /**
      * Returns the channel for which this key was created.
      */
-    public fun channel(): SelectableChannel
+    abstract override fun channel(): SelectableChannel
 
     /**
      * Retrieves this key's interest set.
      *
      * @return the interest set
      */
-    public fun interestOps(): Int
+    abstract override fun interestOps(): Int
 
     /**
      * Sets this key's interest set.
@@ -68,52 +68,52 @@ public interface SelectionKey {
      * @param ops the new interest set
      * @return this selection key
      */
-    public fun interestOps(ops: Int): SelectionKey
+    abstract override fun interestOps(ops: Int): AbstractSelectionKey
 
     /**
      * Retrieves this key's ready set.
      *
      * @return the ready set
      */
-    public fun readyOps(): Int
+    abstract override fun readyOps(): Int
 
     /**
      * Tells whether this key's channel is ready to accept a new socket connection.
      *
      * @return true if acceptable
      */
-    public fun isAcceptable(): Boolean
+    abstract override fun isAcceptable(): Boolean
 
     /**
      * Tells whether this key's channel is ready to complete its connection sequence.
      *
      * @return true if connectable
      */
-    public fun isConnectable(): Boolean
+    abstract override fun isConnectable(): Boolean
 
     /**
      * Tells whether this key's channel is ready for reading.
      *
      * @return true if readable
      */
-    public fun isReadable(): Boolean
+    abstract override fun isReadable(): Boolean
 
     /**
      * Tells whether this key's channel is ready for writing.
      *
      * @return true if writable
      */
-    public fun isWritable(): Boolean
+    abstract override fun isWritable(): Boolean
 
     /**
      * Tells whether this key is valid.
      *
      * @return true if valid
      */
-    public fun isValid(): Boolean
+    abstract override fun isValid(): Boolean
 
     /**
      * Cancels this key.
      */
-    public fun cancel()
+    abstract override fun cancel()
 }
