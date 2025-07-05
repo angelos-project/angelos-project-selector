@@ -4,7 +4,7 @@ import java.net.URL
 
 object This {
     const val longName = "Concurrent selector - Angelos Project™"
-    const val longDescription = "Concurrency utilities purposefully built to give a hassle-free experience in developing concurrent programming built on top of kotlinx.coroutines without exposing the programmer to any setup of underlying technology."
+    const val longDescription = "Asynchronous selector"
     const val url = "https://github.com/angelos-project/angelos-project-selector"
 }
 
